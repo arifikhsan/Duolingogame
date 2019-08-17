@@ -10,7 +10,7 @@ public class Answer {
     private String text;
     private RemoveAnswerListener removeAnswerListener;
 
-    public Answer(View view, Float actualPositionX, Float actualPositionY, String text, RemoveAnswerListener removeAnswerListener) {
+    Answer(View view, Float actualPositionX, Float actualPositionY, String text, RemoveAnswerListener removeAnswerListener) {
         this.view = view;
         this.actualPositionX = actualPositionX;
         this.actualPositionY = actualPositionY;
@@ -57,8 +57,15 @@ public class Answer {
     public void setRemoveAnswerListener(RemoveAnswerListener removeAnswerListener) {
         this.removeAnswerListener = removeAnswerListener;
     }
-}
 
-interface RemoveAnswerListener {
-    void onRemove(Answer answer);
+    @Override
+    public String toString() {
+        return "Answer{" +
+                "view=" + view +
+                ", actualPositionX=" + actualPositionX +
+                ", actualPositionY=" + actualPositionY +
+                ", text='" + text + '\'' +
+                ", removeAnswerListener=" + removeAnswerListener +
+                '}';
+    }
 }

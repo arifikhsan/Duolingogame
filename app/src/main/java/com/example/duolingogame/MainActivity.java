@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -16,9 +17,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, RemoveAnswerListener {
+public class MainActivity extends AppCompatActivity implements RemoveAnswerListener {
 
     public List<Answer> listAnswers = new ArrayList<>();
+    public List<String> myAnswers = new ArrayList<>();
     private List<String> actualAnswers = Arrays.asList("how", "are", "you");
     private List<String> availableAnswers = Arrays.asList(
             "morning",
@@ -26,11 +28,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             "where",
             "not",
             "have",
-            "How",
+            "how",
             "you");
 
     public FlexboxLayout answerBox;
     public View lineFirst, lineSecond;
+    public String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,71 +54,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             FlexboxLayout.LayoutParams layoutParams = (FlexboxLayout.LayoutParams) key.getLayoutParams();
             layoutParams.setMargins(30, 30, 30, 30);
             key.setLayoutParams(layoutParams);
-            key.setOnClickListener(this);
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        moveToAnswer(view);
-    }
-
-    private void moveToAnswer(View view) {
-        if (listAnswers.size() < actualAnswers.size()) {
-//            view.setOnClickListener(null);
-            String a = ((TextView) view).getText().toString();
-            listAnswers.add(new Answer(view, view.getX(), view.getY(), a, MainActivity.this));
-            float topPosition = lineFirst.getY() - 120.0F;
-            float leftPosition = lineFirst.getX();
-
-            if (listAnswers.size() > 1) {
-                float allWidth = 0F;
-                for (Answer answer : listAnswers) {
-                    allWidth += answer.getView().getWidth() + 20F;
-                }
-                allWidth -= view.getWidth();
-                leftPosition = lineFirst.getX() + allWidth;
-            }
-
-            Animator.AnimatorListener animatorListener = new Animator.AnimatorListener() {
+            key.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onAnimationStart(Animator animator) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-                    if (listAnswers.size() == actualAnswers.size()) {
+                public void onClick(View view) {
+                    TextView answer = ((TextView) view);
+                    Log.d(TAG, "onClick: " + answer.getX()
+                            + " | " + answer.getY()
+                            + " | " + answer.getText()
+                    );
+                    Log.d(TAG, "onClick: listAnswer: " + listAnswers.size() + " | " + "actualAnswer: " + actualAnswers.size());
+                    if (listAnswers.size() < actualAnswers.size()) {
+                        moveToAnswer(view);
+                        Log.d(TAG, "onClick: current listAnswer: " + listAnswers.size() + " | " + "current actualAnswer: " + actualAnswers.size());
+                    } else {
                         showAnswer();
                     }
                 }
-            };
-
-            view.animate()
-                    .setListener(animatorListener)
-                    .x(leftPosition)
-                    .y(topPosition);
+            });
         }
     }
 
-    private void showAnswer() {
-//        Boolean isCorrect = actualAnswers.equals(listAnswers);
-        boolean isCorrect = true;
-        for (int i = 0; i < actualAnswers.size(); i++) {
-            if (!listAnswers.get(i).getText().equals(actualAnswers.get(i))) {
-                isCorrect = false;
+    private void moveToAnswer(View view) {
+        view.setOnClickListener(null);
+        listAnswers.add(new Answer(
+                view,
+                view.getX(),
+                view.getY(),
+                ((TextView) view).getText().toString(),
+                MainActivity.this
+        ));
+        myAnswers.add(((TextView) view).getText().toString());
+        float topPosition = lineFirst.getY() - 120.0F;
+        float leftPosition = lineFirst.getX();
+
+        if (listAnswers.size() > 1) {
+            float allWidth = 0F;
+            for (Answer answer : listAnswers) {
+                allWidth += answer.getView().getWidth() + 20F;
             }
+            allWidth -= view.getWidth();
+            leftPosition = lineFirst.getX() + allWidth;
         }
+
+        if (listAnswers.size() == actualAnswers.size()) {
+            showAnswer();
+        }
+
+        view.animate()
+                .x(leftPosition)
+                .y(topPosition);
+    }
+
+    private void showAnswer() {
+        boolean isCorrect = actualAnswers.equals(myAnswers);
+        Log.d(TAG, "showAnswer: listAnswers: " + myAnswers.toString());
+        Log.d(TAG, "showAnswer: actualAnswers: " + actualAnswers.toString());
+        Log.d(TAG, "showAnswer: isCorrect: " + isCorrect);
         String answerMessage = isCorrect ? "Jawaban Anda benar" : "Jawaban Anda salah silahkan coba lagi";
 
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
@@ -132,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onRemove(Answer answer) {
+        Log.d(TAG, "onRemove: start remove");
         listAnswers.remove(answer);
         float allWidth = 0F;
 
@@ -153,4 +148,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
 }
