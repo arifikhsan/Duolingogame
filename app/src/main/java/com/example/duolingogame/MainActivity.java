@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements RemoveAnswerListe
             @Override
             public void onClick(View view) {
                 moveToAnswer(view);
+
             }
         });
     }
