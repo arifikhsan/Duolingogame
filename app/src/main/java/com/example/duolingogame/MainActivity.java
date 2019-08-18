@@ -100,7 +100,28 @@ public class MainActivity extends AppCompatActivity implements RemoveAnswerListe
             showAnswer();
         }
 
+        Animator.AnimatorListener completeMove = new Animator.AnimatorListener() {
+            public void onAnimationRepeat( Animator p0) {
+            }
+
+            public void onAnimationCancel( Animator p0) {
+            }
+
+            public void onAnimationStart(Animator p0) {
+            }
+
+            public void onAnimationEnd( Animator p0) {
+                if (listAnswers.size() == actualAnswers.size()) {
+                    showAnswer();
+                }
+
+            }
+        };
+
+
+
         view.animate()
+                .setListener(completeMove)
                 .x(leftPosition)
                 .y(topPosition);
     }
