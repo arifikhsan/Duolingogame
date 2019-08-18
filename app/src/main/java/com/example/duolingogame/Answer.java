@@ -1,7 +1,9 @@
 package com.example.duolingogame;
 // Created by Arif Ikhsanudin on 8/18/2019.
 
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 public class Answer {
     private View view;
@@ -10,12 +12,28 @@ public class Answer {
     private String text;
     private RemoveAnswerListener removeAnswerListener;
 
-    Answer(View view, Float actualPositionX, Float actualPositionY, String text, RemoveAnswerListener removeAnswerListener) {
+    Answer(View view, Float actualPositionX, Float actualPositionY, String text, final RemoveAnswerListener removeAnswerListener) {
         this.view = view;
         this.actualPositionX = actualPositionX;
         this.actualPositionY = actualPositionY;
         this.text = text;
         this.removeAnswerListener = removeAnswerListener;
+        View back = this.view;
+        if (back != null) {
+            back.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    view.animate()
+                            .x(Answer.this.actualPositionX)
+                            .y(Answer.this.actualPositionY);
+                    RemoveAnswerListener removeAnswerListener1 = Answer.this.getRemoveAnswerListener();
+                    if (removeAnswerListener1 != null) {
+                        removeAnswerListener1.onRemove(Answer.this);
+                    }
+
+                }
+            });
+        }
     }
 
     public View getView() {
@@ -58,6 +76,14 @@ public class Answer {
         this.removeAnswerListener = removeAnswerListener;
     }
 
+    public Answer() {
+        view = null;
+        actualPositionX = 0F;
+        actualPositionY = 0F;
+        text = " ";
+        removeAnswerListener = null;
+    }
+
     @Override
     public String toString() {
         return "Answer{" +
@@ -68,4 +94,6 @@ public class Answer {
                 ", removeAnswerListener=" + removeAnswerListener +
                 '}';
     }
+
+
 }

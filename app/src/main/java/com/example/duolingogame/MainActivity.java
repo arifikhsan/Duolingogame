@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity implements RemoveAnswerListe
     public List<Answer> listAnswers = new ArrayList<>();
     public List<String> myAnswers = new ArrayList<>();
     private List<String> actualAnswers = Arrays.asList("how", "are", "you");
+
+    //generate view secara dinamis
     private List<String> availableAnswers = Arrays.asList(
             "morning",
             "are",
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements RemoveAnswerListe
             "how",
             "you");
 
+    //deklarasikan id
     public FlexboxLayout answerBox;
     public View lineFirst, lineSecond;
     public String TAG = "MainActivity";
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements RemoveAnswerListe
         lineFirst = findViewById(R.id.lineFirst);
         lineSecond = findViewById(R.id.lineSecond);
 
+        //menampilka perulangan kata di available
         for (String answer : availableAnswers) {
             TextView key = new TextView(answerBox.getContext());
             answerBox.addView(key);
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements RemoveAnswerListe
             key.setText(answer);
             key.setTextSize(18.0F);
             key.setPadding(40, 20, 40, 20);
+
             FlexboxLayout.LayoutParams layoutParams = (FlexboxLayout.LayoutParams) key.getLayoutParams();
             layoutParams.setMargins(30, 30, 30, 30);
             key.setLayoutParams(layoutParams);
@@ -58,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements RemoveAnswerListe
                 @Override
                 public void onClick(View view) {
                     TextView answer = ((TextView) view);
+                    //pesan
                     Log.d(TAG, "onClick: " + answer.getX()
                             + " | " + answer.getY()
                             + " | " + answer.getText()
@@ -75,55 +81,49 @@ public class MainActivity extends AppCompatActivity implements RemoveAnswerListe
     }
 
     private void moveToAnswer(View view) {
-        view.setOnClickListener(null);
-        listAnswers.add(new Answer(
-                view,
-                view.getX(),
-                view.getY(),
-                ((TextView) view).getText().toString(),
-                MainActivity.this
-        ));
-        myAnswers.add(((TextView) view).getText().toString());
-        float topPosition = lineFirst.getY() - 120.0F;
-        float leftPosition = lineFirst.getX();
+        if (listAnswers.size() < actualAnswers.size()){
+            view.setOnClickListener(null);
+            listAnswers.add(new Answer(
+                    view,
+                    view.getX(),
+                    view.getY(),
+                    ((TextView) view).getText().toString(),
+                    MainActivity.this
+            ));
+            myAnswers.add(((TextView) view).getText().toString());
+            float topPosition = lineFirst.getY() - 120F;
+            float leftPosition = lineFirst.getX();
 
-        if (listAnswers.size() > 1) {
-            float allWidth = 0F;
-            for (Answer answer : listAnswers) {
-                allWidth += answer.getView().getWidth() + 20F;
-            }
-            allWidth -= view.getWidth();
-            leftPosition = lineFirst.getX() + allWidth;
-        }
-
-        if (listAnswers.size() == actualAnswers.size()) {
-            showAnswer();
-        }
-
-        Animator.AnimatorListener completeMove = new Animator.AnimatorListener() {
-            public void onAnimationRepeat( Animator p0) {
+            if (listAnswers.size() > 1) {
+                float allWidth = 0F;
+                for (Answer answer : listAnswers) {
+                    allWidth += answer.getView().getWidth() + 20F;
+                }
+                allWidth -= view.getWidth();
+                leftPosition = lineFirst.getX() + allWidth;
             }
 
-            public void onAnimationCancel( Animator p0) {
-            }
-
-            public void onAnimationStart(Animator p0) {
-            }
-
-            public void onAnimationEnd( Animator p0) {
-                if (listAnswers.size() == actualAnswers.size()) {
-                    showAnswer();
+            Animator.AnimatorListener completeMove = new Animator.AnimatorListener() {
+                public void onAnimationRepeat(Animator p0) {
                 }
 
-            }
-        };
+                public void onAnimationCancel(Animator p0) {
+                }
 
+                public void onAnimationStart(Animator p0) {
+                }
 
-
-        view.animate()
-                .setListener(completeMove)
-                .x(leftPosition)
-                .y(topPosition);
+                public void onAnimationEnd(Animator p0) {
+                    if (listAnswers.size() == actualAnswers.size()) {
+                        showAnswer();
+                    }
+                }
+            };
+            view.animate()
+                    .setListener(completeMove)
+                    .x(leftPosition)
+                    .y(topPosition);
+        }
     }
 
     private void showAnswer() {
@@ -165,10 +165,17 @@ public class MainActivity extends AppCompatActivity implements RemoveAnswerListe
         answer.getView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                TextView answer = ((TextView) view);
+                //pesan
+                Log.d(TAG, "onClick: " + answer.getX()
+                        + " | " + answer.getY()
+                        + " | " + answer.getText()
+                );
                 moveToAnswer(view);
-
             }
         });
     }
+
+
 
 }
